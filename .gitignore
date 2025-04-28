@@ -1,0 +1,12 @@
+# Ignorar configurações privadas do NetBeans
+nbproject/private/
+
+# Ignorar pastas de build
+build/
+dist/
+
+# Ignorar bibliotecas externas
+*.jar
+
+# Ignorar arquivos de log
+*.log
