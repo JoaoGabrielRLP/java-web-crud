@@ -1,9 +1,3 @@
-<%-- 
-    Document   : salvar_produtos
-    Created on : 23 de abr. de 2025, 11:36:30
-    Author     : João Gabriel
---%>
-
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.DriverManager"%>

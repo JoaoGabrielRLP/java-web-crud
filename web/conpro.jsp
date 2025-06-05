@@ -1,8 +1,9 @@
 <%-- 
-    Document   : listapro
-    Created on : 7 de mai. de 2025, 11:35:42
+    Document   : conpro
+    Created on : 5 de jun. de 2025, 15:39:31
     Author     : João Gabriel
 --%>
+
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.DriverManager"%>
@@ -16,6 +17,10 @@
     </head>
     <body>
         <%
+            //Recebe o nome do produto digitado no formulário digitado no conpro.html
+            String n;
+            n = request.getParameter("nome");
+            
             try{
             //Fazer a conexão com o banco de dados
          
@@ -25,18 +30,14 @@
             Class.forName("com.mysql.cj.jdbc.Driver"); // Serve para chamar a classe da livraria 
             conecta = DriverManager.getConnection("jdbc:mysql://localhost:3306/banco", "root", "root");
             //Inserir os dados na tabela produto do banco de dados aberto
-            st = conecta.prepareStatement("select * from produto");
+            st = conecta.prepareStatement("select * FROM produto WHERE nome LIKE ? ORDER By preco");
+            st.setString(1, "%" + n + "%");
             ResultSet rs = st.executeQuery();
             
             %>
               <table border="1">
                 <tr>
-                    <th>Código</th>
-                    <th>Nome</th>
-                    <th>Marca</th>
-                    <th>Preço</th>
-                    <th>Exclusão</th>
-                    <th>Alteração</th>
+                    <th>Código</th><th>Nome</th><th>Marca</th><th>Preço</th><th>Exclusão</th>
                 </tr>
             <%
             
@@ -47,8 +48,7 @@
                     <td> <%= rs.getString("nome") %> </td>
                     <td> <%= rs.getString("marca") %> </td>
                     <td> <%= rs.getString("preco") %> </td>
-                    <td><a href="excpro.jsp?codigo=<%= rs.getString("codigo")%>">Excluir</a></td>
-                    <td><a href="carregaprod.jsp?codigo=<%= rs.getString("codigo")%>">Alterar</a></td>
+                    <td><a href="excpro.jsp?codigo=<%=rs.getString("codigo")%>">Excluir</td></td>
                 </tr>
             <%
                 
