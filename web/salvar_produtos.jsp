@@ -1,67 +1,65 @@
 <%@page import="java.math.BigDecimal"%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.sql.PreparedStatement"%>
-<%@page import="java.sql.DriverManager"%>
+<%@page import="java.sql.SQLException"%>
+<%@page import="java.util.List"%>
+<%@page import="com.portfolio.crud.Produto"%>
+<%@page import="com.portfolio.crud.ProdutoDAO"%>
+<%@page import="com.portfolio.crud.ProdutoValidator"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Cadastro de produto</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Resultado do cadastro</title>
+        <link rel="stylesheet" href="style.css">
     </head>
-    <body>
+    <body class="pagina-conteudo">
         <%
-         String codigoTexto = request.getParameter("codigo");
-         String nome = request.getParameter("nome");
-         String marca = request.getParameter("marca");
-         String precoTexto = request.getParameter("preco");
+            String codigoTexto = request.getParameter("codigo");
+            String nome = request.getParameter("nome");
+            String marca = request.getParameter("marca");
+            String precoTexto = request.getParameter("preco");
+            List<String> erros = ProdutoValidator.validar(codigoTexto, nome, marca, precoTexto);
 
-         if (codigoTexto == null || nome == null || marca == null || precoTexto == null
-                 || codigoTexto.trim().isEmpty() || nome.trim().isEmpty()
-                 || marca.trim().isEmpty() || precoTexto.trim().isEmpty()) {
-             out.print("Preencha todos os campos.");
-         } else {
-             try {
-                 int codigo = Integer.parseInt(codigoTexto.trim());
-                 nome = nome.trim();
-                 marca = marca.trim();
-                 BigDecimal preco = new BigDecimal(precoTexto.trim().replace(",", "."));
-
-                 if (nome.length() > 50 || marca.length() > 50
-                         || preco.compareTo(BigDecimal.ZERO) < 0
-                         || preco.scale() > 2) {
-                     out.print("Dados invalidos. Confira os limites e o preco.");
-                 } else {
-                     String url = System.getenv("DB_URL");
-                     String usuario = System.getenv("DB_USER");
-                     String senha = System.getenv("DB_PASSWORD");
-
-                     if (url == null || url.trim().isEmpty()
-                             || usuario == null || usuario.trim().isEmpty()
-                             || senha == null) {
-                         out.print("Banco nao configurado. Defina DB_URL, DB_USER e DB_PASSWORD.");
-                     } else {
-                         Class.forName("com.mysql.cj.jdbc.Driver");
-                         try (Connection conecta = DriverManager.getConnection(url, usuario, senha);
-                              PreparedStatement st = conecta.prepareStatement(
-                                  "INSERT INTO produto (codigo, nome, marca, preco) VALUES (?, ?, ?, ?)")) {
-                             st.setInt(1, codigo);
-                             st.setString(2, nome);
-                             st.setString(3, marca);
-                             st.setBigDecimal(4, preco);
-                             st.executeUpdate();
-                             out.print("Produto cadastrado com sucesso.");
-                         }
-                     }
-                 }
-             } catch (NumberFormatException e) {
-                 out.print("Codigo ou preco invalido.");
-             } catch (ClassNotFoundException e) {
-                 out.print("Conector MySQL nao encontrado no aplicativo.");
-             } catch (Exception e) {
-                 out.print("Nao foi possivel salvar o produto.");
-             }
-         }
+            if (!erros.isEmpty()) {
         %>
+            <div class="mensagem erro">
+                <strong>O produto nao foi cadastrado.</strong>
+                <ul>
+                    <% for (String erro : erros) { %>
+                        <li><%= com.portfolio.crud.HtmlUtil.escape(erro) %></li>
+                    <% } %>
+                </ul>
+            </div>
+        <%
+            } else {
+                try {
+                    int codigo = Integer.parseInt(codigoTexto.trim());
+                    Produto produto = new Produto(
+                            codigo,
+                            nome.trim(),
+                            marca.trim(),
+                            new BigDecimal(precoTexto.trim().replace(',', '.')));
+                    new ProdutoDAO().criar(produto);
+        %>
+            <div class="mensagem sucesso">Produto cadastrado com sucesso.</div>
+        <%
+                } catch (java.sql.SQLIntegrityConstraintViolationException exception) {
+        %>
+            <div class="mensagem erro">Ja existe um produto com esse codigo.</div>
+        <%
+                } catch (IllegalStateException exception) {
+        %>
+            <div class="mensagem erro">O banco nao esta configurado. Consulte o README para definir as variaveis de ambiente.</div>
+        <%
+                } catch (SQLException exception) {
+        %>
+            <div class="mensagem erro">Nao foi possivel salvar o produto no banco de dados.</div>
+        <%
+                }
+            }
+        %>
+        <p><a class="botao" href="cadpro.html">Cadastrar outro produto</a></p>
+        <p><a href="listapro.jsp">Ver listagem</a></p>
     </body>
 </html>

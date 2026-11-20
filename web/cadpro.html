@@ -1,35 +1,27 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="pt-BR">
     <head>
-        <title>Cadastro de produtos</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cadastrar produto</title>
+        <link rel="stylesheet" href="style.css">
     </head>
-    <body>
-        <form method="post" action="salvar_produtos.jsp">
-            <p>
-                <label for="codigo">Codigo do produto</label>
-                <input type="number" name="codigo" id="codigo" min="1" required>
-            </p>
-            
-            <p>
-                <label for="nome">Nome do produto:</label> 
-                <input type="text" name="nome" id="nome" size="50" maxlength="50" required>
-            </p>
-            
-            <p>
-                <label for="marca">Marca:</label> 
-                <input type="text" name="marca" id="marca" size="50" maxlength="50" required>
-            </p>
-            
-            <p>
-                <label for="preco">Preço:</label> 
-                <input type="number" name="preco" id="preco" min="0" step="0.01" required>
-            </p>
-            
-            <p>
-                <input type="submit" value="salvar">
-            </p>
-        </form> <!-- O métooo post faz com que as informações colocadas no formulário sejam enviadas e não apareçam na URL -->
+    <body class="pagina-conteudo">
+        <h1>Cadastrar produto</h1>
+        <form class="formulario" method="post" action="salvar_produtos.jsp">
+            <label for="codigo">Codigo</label>
+            <input type="number" name="codigo" id="codigo" min="1" required>
+
+            <label for="nome">Nome</label>
+            <input type="text" name="nome" id="nome" maxlength="50" required>
+
+            <label for="marca">Marca</label>
+            <input type="text" name="marca" id="marca" maxlength="50" required>
+
+            <label for="preco">Preco</label>
+            <input type="number" name="preco" id="preco" min="0" step="0.01" required>
+
+            <button type="submit">Salvar</button>
+        </form>
     </body>
 </html>

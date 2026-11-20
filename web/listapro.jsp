@@ -1,63 +1,83 @@
-<%-- 
-    Document   : listapro
-    Created on : 7 de mai. de 2025, 11:35:42
-    Author     : João Gabriel
---%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.sql.PreparedStatement"%>
-<%@page import="java.sql.DriverManager"%>
-<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.SQLException"%>
+<%@page import="java.util.List"%>
+<%@page import="com.portfolio.crud.HtmlUtil"%>
+<%@page import="com.portfolio.crud.Produto"%>
+<%@page import="com.portfolio.crud.ProdutoDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Listagem de produtos</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Produtos cadastrados</title>
+        <link rel="stylesheet" href="style.css">
     </head>
-    <body>
+    <body class="pagina-conteudo">
+        <h1>Produtos cadastrados</h1>
         <%
-            try{
-            //Fazer a conexão com o banco de dados
-         
-            Connection conecta; // Guarda a conexão com o banco de dados
-         
-            PreparedStatement st;
-            Class.forName("com.mysql.cj.jdbc.Driver"); // Serve para chamar a classe da livraria 
-            conecta = DriverManager.getConnection("jdbc:mysql://localhost:3306/banco", "root", "root");
-            //Inserir os dados na tabela produto do banco de dados aberto
-            st = conecta.prepareStatement("select * from produto");
-            ResultSet rs = st.executeQuery();
-            
-            %>
-              <table border="1">
-                <tr>
-                    <th>Código</th>
-                    <th>Nome</th>
-                    <th>Marca</th>
-                    <th>Preço</th>
-                    <th>Exclusão</th>
-                    <th>Alteração</th>
-                </tr>
-            <%
-            
-            while(rs.next()){
-            %>     
-                <tr>
-                    <td> <%= rs.getString("codigo") %> </td>
-                    <td> <%= rs.getString("nome") %> </td>
-                    <td> <%= rs.getString("marca") %> </td>
-                    <td> <%= rs.getString("preco") %> </td>
-                    <td><a href="excpro.jsp?codigo=<%= rs.getString("codigo")%>">Excluir</a></td>
-                    <td><a href="carregaprod.jsp?codigo=<%= rs.getString("codigo")%>">Alterar</a></td>
-                </tr>
-            <%
-                
+            String sucesso = request.getParameter("sucesso");
+            String erro = request.getParameter("erro");
+            if ("excluido".equals(sucesso)) {
+        %>
+            <div class="mensagem sucesso">Produto excluido com sucesso.</div>
+        <%
+            } else if ("atualizado".equals(sucesso)) {
+        %>
+            <div class="mensagem sucesso">Produto atualizado com sucesso.</div>
+        <%
             }
-            %>
-            </table>
-            <%
-            } catch (Exception x){
-                out.print("Erro: " + x.getMessage());
+            if ("nao_encontrado".equals(erro)) {
+        %>
+            <div class="mensagem erro">Produto nao encontrado.</div>
+        <%
+            }
+        %>
+        <%
+            try {
+                List<Produto> produtos = new ProdutoDAO().listar();
+                if (produtos.isEmpty()) {
+        %>
+            <div class="mensagem">Nenhum produto cadastrado.</div>
+        <%
+                } else {
+        %>
+            <div class="tabela-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Nome</th>
+                            <th>Marca</th>
+                            <th>Preco</th>
+                            <th>Acoes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (Produto produto : produtos) { %>
+                            <tr>
+                                <td><%= produto.getCodigo() %></td>
+                                <td><%= HtmlUtil.escape(produto.getNome()) %></td>
+                                <td><%= HtmlUtil.escape(produto.getMarca()) %></td>
+                                <td>R$ <%= produto.getPreco().setScale(2, java.math.RoundingMode.HALF_UP) %></td>
+                                <td class="acoes">
+                                    <a href="carregaprod.jsp?codigo=<%= produto.getCodigo() %>">Editar</a>
+                                    <a href="excpro.jsp?codigo=<%= produto.getCodigo() %>">Excluir</a>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        <%
+                }
+            } catch (IllegalStateException exception) {
+        %>
+            <div class="mensagem erro">O banco nao esta configurado. Consulte o README.</div>
+        <%
+            } catch (SQLException exception) {
+        %>
+            <div class="mensagem erro">Nao foi possivel consultar os produtos.</div>
+        <%
             }
         %>
     </body>

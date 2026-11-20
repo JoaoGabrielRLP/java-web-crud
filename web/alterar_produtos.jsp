@@ -1,47 +1,62 @@
-<%-- 
-    Document   : alterar_produtos
-    Created on : 5 de jun. de 2025, 17:11:40
-    Author     : João Gabriel
---%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.sql.PreparedStatement"%>
-<%@page import="java.sql.DriverManager"%>
+<%@page import="java.math.BigDecimal"%>
+<%@page import="java.sql.SQLException"%>
+<%@page import="java.util.List"%>
+<%@page import="com.portfolio.crud.Produto"%>
+<%@page import="com.portfolio.crud.ProdutoDAO"%>
+<%@page import="com.portfolio.crud.ProdutoValidator"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Alteração de produtos</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Resultado da alteracao</title>
+        <link rel="stylesheet" href="style.css">
     </head>
-    <body>
+    <body class="pagina-conteudo">
         <%
-            //Receber os dados alterados no formulário carregaprod.jsp
-            int c;
-            String n, m;
-            double p;
+            String codigoTexto = request.getParameter("codigo");
+            String nome = request.getParameter("nome");
+            String marca = request.getParameter("marca");
+            String precoTexto = request.getParameter("preco");
+            List<String> erros = ProdutoValidator.validar(codigoTexto, nome, marca, precoTexto);
 
-            c = Integer.parseInt(request.getParameter("codigo"));
-            n = request.getParameter("nome");
-            m = request.getParameter("marca");
-            p = Double.parseDouble(request.getParameter("preco"));
-
-            //Fazer a conexão com o banco de dados
-            Connection conecta; // Guarda a conexão com o banco de dados
-
-            PreparedStatement st;
-            Class.forName("com.mysql.cj.jdbc.Driver"); // Serve para chamar a classe da livraria 
-            conecta = DriverManager.getConnection("jdbc:mysql://localhost:3306/banco", "root", "root");
-            
-            //Alterar os dados na tabela produtos do BD
-            
-            st = conecta.prepareStatement("UPDATE produto SET nome = ?, marca = ?, preco = ? WHERE codigo = ?");
-            st.setString(1, n);
-            st.setString(2, m);
-            st.setDouble(3, p);
-            st.setInt(4, c);
-            
-            st.executeUpdate(); //Executa o UPDATE
-            out.print("Os dados do produto " + c + " foi alterado com sucesso");
+            if (!erros.isEmpty()) {
         %>
+            <div class="mensagem erro">
+                <strong>A alteracao nao foi salva.</strong>
+                <ul>
+                    <% for (String erro : erros) { %>
+                        <li><%= com.portfolio.crud.HtmlUtil.escape(erro) %></li>
+                    <% } %>
+                </ul>
+            </div>
+        <%
+            } else {
+                try {
+                    Produto produto = new Produto(
+                            Integer.parseInt(codigoTexto.trim()),
+                            nome.trim(),
+                            marca.trim(),
+                            new BigDecimal(precoTexto.trim().replace(',', '.')));
+                    if (new ProdutoDAO().atualizar(produto)) {
+                        response.sendRedirect("listapro.jsp?sucesso=atualizado");
+                        return;
+                    }
+        %>
+            <div class="mensagem erro">Produto nao encontrado.</div>
+        <%
+                } catch (IllegalStateException exception) {
+        %>
+            <div class="mensagem erro">O banco nao esta configurado. Consulte o README.</div>
+        <%
+                } catch (SQLException exception) {
+        %>
+            <div class="mensagem erro">Nao foi possivel atualizar o produto.</div>
+        <%
+                }
+            }
+        %>
+        <p><a href="listapro.jsp">Voltar para a listagem</a></p>
     </body>
 </html>

@@ -4,7 +4,7 @@ Aplicacao web Java com JSP para cadastro de produtos em MySQL.
 
 ## Requisitos
 
-- JDK 17 ou superior
+- JDK 25 ou superior (LTS)
 - Apache Tomcat 11
 - MySQL 8
 - Maven 3.9 ou superior
@@ -36,7 +36,6 @@ No Windows PowerShell:
 $env:DB_URL="jdbc:mysql://localhost:3306/banco?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
 $env:DB_USER="crud_app"
 $env:DB_PASSWORD="change-this-password"
-$env:JDK_JAVA_OPTIONS="-Djava.version=17"
 ```
 
 Nunca coloque estas credenciais no repositorio.
@@ -48,3 +47,11 @@ mvn clean package
 ```
 
 O WAR sera criado em `target/Site.war` e pode ser implantado no diretório `webapps` do Tomcat.
+
+## Testes
+
+Os testes cobrem validacoes e as operacoes CRUD com um banco H2 em memoria:
+
+```powershell
+mvn test
+```

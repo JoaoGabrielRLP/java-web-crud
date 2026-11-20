@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
--->
-<html>
+<html lang="pt-BR">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Consulta de produtos</title>
+        <link rel="stylesheet" href="style.css">
     </head>
-    <body>
-        <form action="conpro.jsp" method="post">
-            <label for="nom"> Nome do produto: </label>
-            <input id="nom" type="text" name="nome" required="required">
-            <input type="submit" value="Consultar">
+    <body class="pagina-conteudo">
+        <h1>Consultar produtos</h1>
+        <form class="formulario" action="conpro.jsp" method="post">
+            <label for="nome">Nome do produto</label>
+            <input id="nome" type="text" name="nome" maxlength="50" required>
+            <button type="submit">Consultar</button>
         </form>
     </body>
 </html>

@@ -1,64 +1,61 @@
-<%@page import="java.sql.Connection"%>
-<%@page import="java.sql.PreparedStatement"%>
-<%@page import="java.sql.DriverManager"%>
-<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.SQLException"%>
+<%@page import="com.portfolio.crud.HtmlUtil"%>
+<%@page import="com.portfolio.crud.Produto"%>
+<%@page import="com.portfolio.crud.ProdutoDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Alteração de produtos</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Editar produto</title>
+        <link rel="stylesheet" href="style.css">
     </head>
-    <body>
+    <body class="pagina-conteudo">
+        <h1>Editar produto</h1>
         <%
-            //Recebe o código do produto alterar    
-            int c;
-            c = Integer.parseInt(request.getParameter("codigo"));
-            //Conectar ao banco de dados    
-
-            //Fazer a conexão com o banco de dados
-            Connection conecta; // Guarda a conexão com o banco de dados
-
-            PreparedStatement st;
-            Class.forName("com.mysql.cj.jdbc.Driver"); // Serve para chamar a classe da livraria 
-            conecta = DriverManager.getConnection("jdbc:mysql://localhost:3306/banco", "root", "root");
-            //Buscar o produto pelo código que foi recebido
-            st = conecta.prepareStatement("SELECT * FROM produto WHERE codigo = ?");
-
-            st.setInt(1, c);
-            ResultSet resultado = st.executeQuery();
-            //Verifica se o produto de código informado foi encontrado
-            if (!resultado.next()) { // Se não encontrar o produto
-                out.print("Este produto não foi encontrado");
-            } else { //Se encontrou o produto
+            String codigoTexto = request.getParameter("codigo");
+            try {
+                int codigo = Integer.parseInt(codigoTexto == null ? "" : codigoTexto);
+                Produto produto = new ProdutoDAO().buscarPorCodigo(codigo);
+                if (produto == null) {
         %>
-        <form method="post" action="alterar_produtos.jsp">
-            <p>
-                <label for="codigo">Códido do produto</label> <!-- O campo for serve para vincular a label com o input utilizando o ID no input -->
-                <input type="text" name="codigo" id="codigo" value="<%= resultado.getString("codigo") %>" readonly> <!-- O name guarda o que for digitado no campo -->
-            </p>
+            <div class="mensagem erro">Produto nao encontrado.</div>
+        <%
+                } else {
+        %>
+            <form class="formulario" method="post" action="alterar_produtos.jsp">
+                <label for="codigo">Codigo</label>
+                <input type="number" name="codigo" id="codigo" value="<%= produto.getCodigo() %>" readonly>
 
-            <p>
-                <label for="nome">Nome do produto:</label> 
-                <input type="text" name="nome" id="nome" size="50" maxlength="50" value="<%= resultado.getString("nome") %>"> 
-            </p>
+                <label for="nome">Nome</label>
+                <input type="text" name="nome" id="nome" maxlength="50" value="<%= HtmlUtil.escape(produto.getNome()) %>" required>
 
-            <p>
-                <label for="marca">Marca:</label> 
-                <input type="text" name="marca" id="marca" size="50" maxlength="50" value="<%= resultado.getString("marca") %>"> 
-                       </p>
+                <label for="marca">Marca</label>
+                <input type="text" name="marca" id="marca" maxlength="50" value="<%= HtmlUtil.escape(produto.getMarca()) %>" required>
 
-                       <p>
-                       <label for="preco">Preço:</label> 
-                <input type="text" name="preco" id="preco" value="<%= resultado.getString("preco") %>"> 
-                       </p>
+                <label for="preco">Preco</label>
+                <input type="number" name="preco" id="preco" min="0" step="0.01"
+                       value="<%= produto.getPreco().setScale(2, java.math.RoundingMode.HALF_UP) %>" required>
 
-                       <p>
-                       <input type="submit" value="Salvar alterações">
-            </p>
-        </form>
+                <button type="submit">Salvar alteracoes</button>
+            </form>
+        <%
+                }
+            } catch (NumberFormatException exception) {
+        %>
+            <div class="mensagem erro">Codigo invalido.</div>
+        <%
+            } catch (IllegalStateException exception) {
+        %>
+            <div class="mensagem erro">O banco nao esta configurado. Consulte o README.</div>
+        <%
+            } catch (SQLException exception) {
+        %>
+            <div class="mensagem erro">Nao foi possivel carregar o produto.</div>
         <%
             }
         %>
+        <p><a href="listapro.jsp">Voltar para a listagem</a></p>
     </body>
 </html>

@@ -1,43 +1,60 @@
-<%-- 
-    Document   : excpro
-    Created on : 14 de mai. de 2025, 08:26:11
-    Author     : João Gabriel
---%>
-<%@page import="java.sql.Connection"%>
-<%@page import="java.sql.PreparedStatement"%>
-<%@page import="java.sql.DriverManager"%>
+<%@page import="java.sql.SQLException"%>
+<%@page import="com.portfolio.crud.Produto"%>
+<%@page import="com.portfolio.crud.ProdutoDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="java.sql.ResultSet"%>
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Excluir produtos</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Excluir produto</title>
+        <link rel="stylesheet" href="style.css">
     </head>
-    <body>
+    <body class="pagina-conteudo">
         <%
-            //Recebe o código digitado no formulário
-            int cod;
-            cod = Integer.parseInt(request.getParameter("codigo")); //Pega o parâmetro da página excpro.html e o converte para int
-            //Faz a conexão entre o mysql e o banco de dados
-
+            String codigoTexto = request.getParameter("codigo");
+            String metodo = request.getMethod();
             try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                Connection conecta = DriverManager.getConnection("jdbc:mysql://localhost:3306/banco", "root", "root");
-                //Excluem o produto de código informado
-                PreparedStatement st = conecta.prepareStatement("DELETE FROM produto WHERE codigo=?");
-                st.setInt(1, cod);
-                int resultado = st.executeUpdate();
-                // Verifica se o produto foi ou não excluído
-                if (resultado == 0) {
-                    out.print("Este produto não está cadastrado");
-                } else {
-                    out.print("O produto de código " + cod + " foi excluído com sucesso");
-                }
+                int codigo = Integer.parseInt(codigoTexto == null ? "" : codigoTexto);
+                ProdutoDAO dao = new ProdutoDAO();
 
-            } catch (Exception erro) {
-                String mensagemErro = erro.getMessage();
-                out.print("Entre em contato com o suporte e informe o erro: " + mensagemErro);
+                if ("POST".equalsIgnoreCase(metodo)) {
+                    if (dao.excluir(codigo)) {
+                        response.sendRedirect("listapro.jsp?sucesso=excluido");
+                        return;
+                    }
+        %>
+            <div class="mensagem erro">Produto nao encontrado.</div>
+        <%
+                } else {
+                    Produto produto = dao.buscarPorCodigo(codigo);
+                    if (produto == null) {
+                        response.sendRedirect("listapro.jsp?erro=nao_encontrado");
+                        return;
+                    }
+        %>
+            <h1>Confirmar exclusao</h1>
+            <p>Deseja excluir o produto <strong><%= com.portfolio.crud.HtmlUtil.escape(produto.getNome()) %></strong>
+               (codigo <%= produto.getCodigo() %>)?</p>
+            <form class="formulario-inline" method="post" action="excpro.jsp">
+                <input type="hidden" name="codigo" value="<%= produto.getCodigo() %>">
+                <button class="perigo" type="submit">Confirmar exclusao</button>
+                <a class="botao secundario" href="listapro.jsp">Cancelar</a>
+            </form>
+        <%
+                    }
+            } catch (NumberFormatException exception) {
+        %>
+            <div class="mensagem erro">Codigo invalido.</div>
+        <%
+            } catch (IllegalStateException exception) {
+        %>
+            <div class="mensagem erro">O banco nao esta configurado. Consulte o README.</div>
+        <%
+            } catch (SQLException exception) {
+        %>
+            <div class="mensagem erro">Nao foi possivel concluir a exclusao.</div>
+        <%
             }
         %>
     </body>
