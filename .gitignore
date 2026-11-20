@@ -4,6 +4,7 @@ nbproject/private/
 # Ignorar pastas de build
 build/
 dist/
+target/
 
 # Ignorar bibliotecas externas
 *.jar

@@ -8,23 +8,23 @@
     <body>
         <form method="post" action="salvar_produtos.jsp">
             <p>
-                <label for="codigo">Codido do produto</label> <!-- O campo for serve para vincular a label com o input utilizando o ID no input -->
-                <input type="text" name="codigo" id="codigo"> <!-- O name guarda o que for digitado no campo -->
+                <label for="codigo">Codigo do produto</label>
+                <input type="number" name="codigo" id="codigo" min="1" required>
             </p>
             
             <p>
                 <label for="nome">Nome do produto:</label> 
-                <input type="text" name="nome" id="nome" size="50" maxlength="50"> 
+                <input type="text" name="nome" id="nome" size="50" maxlength="50" required>
             </p>
             
             <p>
                 <label for="marca">Marca:</label> 
-                <input type="text" name="marca" id="marca" size="50" maxlength="50"> 
+                <input type="text" name="marca" id="marca" size="50" maxlength="50" required>
             </p>
             
             <p>
                 <label for="preco">Preço:</label> 
-                <input type="text" name="preco" id="preco"> 
+                <input type="number" name="preco" id="preco" min="0" step="0.01" required>
             </p>
             
             <p>

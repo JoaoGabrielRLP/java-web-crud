@@ -1,3 +1,4 @@
+<%@page import="java.math.BigDecimal"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.DriverManager"%>
@@ -6,40 +7,61 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Cadastro de produto</title>
     </head>
     <body>
         <%
-         //Receber os dados digitados no formulário cadpro.html
-         int c;
-         String n, m;
-         double p;
-         
-         c = Integer.parseInt(request.getParameter("codigo"));
-         n = request.getParameter("nome");
-         m = request.getParameter("marca"); 
-         p = Double.parseDouble(request.getParameter("preco"));
-         try{
-            //Fazer a conexão com o banco de dados
-         
-            Connection conecta; // Guarda a conexão com o banco de dados
-         
-            PreparedStatement st;
-            Class.forName("com.mysql.cj.jdbc.Driver"); // Serve para chamar a classe da livraria 
-            conecta = DriverManager.getConnection("jdbc:mysql://localhost:3306/banco", "root", "root");
-            //Inserir os dados na tabela produto do banco de dados aberto
-         
-            st = conecta.prepareStatement("INSERT INTO produto VALUES(?,?,?,?)");
-            st.setInt(1, c);
-            st.setString(2, n);
-            st.setString(3, m);
-            st.setDouble(4, p);
-            st.executeUpdate(); //Executa o comando INSERT
-            out.print("Produto cadastrado com sucesso");
-         
-            } catch (Exception x){
-                out.print("Erro: " + x.getMessage());
-            }
+         String codigoTexto = request.getParameter("codigo");
+         String nome = request.getParameter("nome");
+         String marca = request.getParameter("marca");
+         String precoTexto = request.getParameter("preco");
+
+         if (codigoTexto == null || nome == null || marca == null || precoTexto == null
+                 || codigoTexto.trim().isEmpty() || nome.trim().isEmpty()
+                 || marca.trim().isEmpty() || precoTexto.trim().isEmpty()) {
+             out.print("Preencha todos os campos.");
+         } else {
+             try {
+                 int codigo = Integer.parseInt(codigoTexto.trim());
+                 nome = nome.trim();
+                 marca = marca.trim();
+                 BigDecimal preco = new BigDecimal(precoTexto.trim().replace(",", "."));
+
+                 if (nome.length() > 50 || marca.length() > 50
+                         || preco.compareTo(BigDecimal.ZERO) < 0
+                         || preco.scale() > 2) {
+                     out.print("Dados invalidos. Confira os limites e o preco.");
+                 } else {
+                     String url = System.getenv("DB_URL");
+                     String usuario = System.getenv("DB_USER");
+                     String senha = System.getenv("DB_PASSWORD");
+
+                     if (url == null || url.trim().isEmpty()
+                             || usuario == null || usuario.trim().isEmpty()
+                             || senha == null) {
+                         out.print("Banco nao configurado. Defina DB_URL, DB_USER e DB_PASSWORD.");
+                     } else {
+                         Class.forName("com.mysql.cj.jdbc.Driver");
+                         try (Connection conecta = DriverManager.getConnection(url, usuario, senha);
+                              PreparedStatement st = conecta.prepareStatement(
+                                  "INSERT INTO produto (codigo, nome, marca, preco) VALUES (?, ?, ?, ?)")) {
+                             st.setInt(1, codigo);
+                             st.setString(2, nome);
+                             st.setString(3, marca);
+                             st.setBigDecimal(4, preco);
+                             st.executeUpdate();
+                             out.print("Produto cadastrado com sucesso.");
+                         }
+                     }
+                 }
+             } catch (NumberFormatException e) {
+                 out.print("Codigo ou preco invalido.");
+             } catch (ClassNotFoundException e) {
+                 out.print("Conector MySQL nao encontrado no aplicativo.");
+             } catch (Exception e) {
+                 out.print("Nao foi possivel salvar o produto.");
+             }
+         }
         %>
     </body>
 </html>
