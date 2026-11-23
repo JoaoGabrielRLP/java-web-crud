@@ -44,18 +44,21 @@
         %>
             <div class="mensagem sucesso">Produto cadastrado com sucesso.</div>
         <%
-                } catch (java.sql.SQLIntegrityConstraintViolationException exception) {
-        %>
-            <div class="mensagem erro">Ja existe um produto com esse codigo.</div>
-        <%
                 } catch (IllegalStateException exception) {
         %>
             <div class="mensagem erro">O banco nao esta configurado. Consulte o README para definir as variaveis de ambiente.</div>
         <%
                 } catch (SQLException exception) {
+                    application.log("Falha ao salvar produto no banco de dados.", exception);
+                    if ("23505".equals(exception.getSQLState())) {
+        %>
+            <div class="mensagem erro">Ja existe um produto com esse codigo.</div>
+        <%
+                    } else {
         %>
             <div class="mensagem erro">Nao foi possivel salvar o produto no banco de dados.</div>
         <%
+                    }
                 }
             }
         %>
