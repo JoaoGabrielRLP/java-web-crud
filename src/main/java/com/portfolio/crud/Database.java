@@ -12,6 +12,11 @@ public final class Database {
         String url = getRequiredEnvironment("DB_URL");
         String user = getRequiredEnvironment("DB_USER");
         String password = getRequiredEnvironment("DB_PASSWORD");
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException exception) {
+            throw new SQLException("Driver JDBC do PostgreSQL nao encontrado.", exception);
+        }
         return DriverManager.getConnection(url, user, password);
     }
 

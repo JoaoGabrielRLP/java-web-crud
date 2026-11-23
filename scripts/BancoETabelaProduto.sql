@@ -1,15 +1,7 @@
-CREATE SCHEMA IF NOT EXISTS `banco`
-  DEFAULT CHARACTER SET utf8mb4
-  COLLATE utf8mb4_0900_ai_ci;
-
-USE `banco`;
-
-CREATE TABLE IF NOT EXISTS `produto` (
-  `codigo` INT NOT NULL,
-  `nome` VARCHAR(50) NOT NULL,
-  `marca` VARCHAR(50) NOT NULL,
-  `preco` DECIMAL(12,2) NOT NULL,
-  PRIMARY KEY (`codigo`)
-) ENGINE=InnoDB
-  DEFAULT CHARACTER SET utf8mb4
-  COLLATE utf8mb4_0900_ai_ci;
+CREATE TABLE IF NOT EXISTS public.produto (
+  codigo INTEGER NOT NULL,
+  nome VARCHAR(50) NOT NULL,
+  marca VARCHAR(50) NOT NULL,
+  preco NUMERIC(12,2) NOT NULL,
+  PRIMARY KEY (codigo)
+);

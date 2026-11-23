@@ -1,31 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
     <head>
-        <title>Home</title>
+        <title>CRUD de Produtos</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
     </head>
     <body>
         <header>
-            <h1>CRUD de Produtos</h1>
-
+            <div class="marca">
+                <span class="marca-simbolo" aria-hidden="true">CP</span>
+                <div>
+                    <h1>CRUD de Produtos</h1>
+                    <p>Cadastro, consulta, edição e exclusão com Java e PostgreSQL</p>
+                </div>
+            </div>
         </header>
 
         <nav>
-            <a href="cadpro.html" target="centro">Cadastro de produtos</a>
-            <a href="listapro.jsp" target="centro">Listagem de produtos</a>
-            <a href="conpro.html" target="centro">Consultar produtos</a>
+            <a href="apresentacao.html" target="centro">Início</a>
+            <a href="cadpro.html" target="centro">Cadastrar</a>
+            <a href="listapro.jsp" target="centro">Produtos</a>
+            <a href="conpro.html" target="centro">Consultar</a>
         </nav>
 
-        <main><!-- O name guarda o que for digitado no campo -->
+        <main>
             <iframe src="apresentacao.html" name="centro"> 
                 
             </iframe>
         </main>
 
         <footer>
-            <p>Desenvolvido: por João Gabriel</p>
+            <p>Projeto de portfólio desenvolvido por João Gabriel</p>
         </footer>
     </body>
 </html>

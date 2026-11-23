@@ -11,3 +11,8 @@ target/
 
 # Ignorar arquivos de log
 *.log
+
+# Ignorar arquivos de ambiente e segredos locais
+.env
+.env.*
+!.env.example

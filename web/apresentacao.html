@@ -1,14 +1,52 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
     <head>
-        <title>CRUD de Produtos</title>
+        <title>Apresentação do projeto</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style.css">
     </head>
-    <body class="pagina-conteudo">
-        <h1>CRUD de Produtos</h1>
-        <p>Aplicacao web para cadastrar, consultar, editar e excluir produtos com persistencia em MySQL.</p>
-        <p>Use o menu acima para executar as operacoes disponiveis.</p>
+    <body class="pagina-conteudo apresentacao">
+        <section class="hero">
+            <div>
+                <span class="tag">Projeto de portfólio</span>
+                <h1>Gerencie produtos de forma simples</h1>
+                <p>Uma aplicação web completa para cadastrar, listar, buscar, editar e excluir produtos com persistência em PostgreSQL.</p>
+                <div class="acoes-principais">
+                    <a class="botao" href="cadpro.html" target="centro">Cadastrar produto</a>
+                    <a class="botao secundario" href="listapro.jsp" target="centro">Ver produtos</a>
+                </div>
+            </div>
+            <div class="painel-tecnologias" aria-label="Tecnologias utilizadas">
+                <strong>Tecnologias</strong>
+                <span>Java 17</span>
+                <span>JSP</span>
+                <span>PostgreSQL</span>
+                <span>Tomcat</span>
+            </div>
+        </section>
+
+        <section>
+            <h2>Como funciona</h2>
+            <div class="cards">
+                <article>
+                    <strong>1. Cadastrar</strong>
+                    <p>Informe código, nome, marca e preço.</p>
+                </article>
+                <article>
+                    <strong>2. Consultar</strong>
+                    <p>Veja a lista completa ou filtre pelo nome.</p>
+                </article>
+                <article>
+                    <strong>3. Gerenciar</strong>
+                    <p>Atualize ou exclua um registro com confirmação.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="aviso-demo">
+            <h2>Área de demonstração</h2>
+            <p>Use apenas dados fictícios. A tabela pode ser preparada com os produtos de demonstração descritos no README.</p>
+        </section>
     </body>
 </html>
